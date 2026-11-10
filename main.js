@@ -1,47 +1,43 @@
 (() => {
   'use strict';
   const root = document.documentElement;
-  root.classList.add('has-js');
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const map = document.querySelector('.research-map');
-  const description = document.getElementById('lens-description');
-  const lenses = document.querySelectorAll('[data-lens]');
-  lenses.forEach((button) => {
-    button.addEventListener('click', () => {
-      lenses.forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
-      if (map) map.dataset.focus = button.dataset.lens;
-      if (description) description.textContent = button.dataset.description;
-    });
-  });
-
-  // A manual pause lasts for this tab, including when switching languages.
-  let paused = false;
-  try { paused = sessionStorage.getItem('motion-paused') === 'true'; } catch (_) { /* Storage is optional. */ }
-  const motionButton = document.querySelector('.motion-button');
-  const syncMotion = () => {
-    root.classList.toggle('motion-paused', paused || reducedMotion.matches);
-    if (!motionButton) return;
-    const label = paused ? motionButton.dataset.resumeLabel : motionButton.dataset.pauseLabel;
-    motionButton.setAttribute('aria-label', label);
-    motionButton.setAttribute('aria-pressed', String(paused));
-    motionButton.querySelector('.motion-label').textContent = label;
-    motionButton.querySelector('.motion-icon').textContent = paused ? '▷' : 'Ⅱ';
-  };
-  syncMotion();
-  motionButton?.addEventListener('click', () => {
-    paused = !paused;
-    try { sessionStorage.setItem('motion-paused', String(paused)); } catch (_) { /* Storage is optional. */ }
-    syncMotion();
-  });
-
-  // Keep content visible without JavaScript, and reveal offscreen sections once.
-  let observer;
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const button = document.querySelector('.motion-button');
   const reveals = document.querySelectorAll('.reveal');
+  const navLinks = [...document.querySelectorAll('.site-header nav a')];
+  const sections = [...document.querySelectorAll('main > section[id]')];
+  let paused = false;
+  let observer;
+  let scheduled = false;
+  let activeSection = '';
+  try { paused = sessionStorage.getItem('motion-paused') === 'true'; } catch (_) { /* Optional preference storage. */ }
+  root.classList.add('has-js');
+
   const revealAll = () => {
     observer?.disconnect();
     reveals.forEach((item) => item.classList.add('is-visible'));
   };
-  if ('IntersectionObserver' in window && !reducedMotion.matches && !paused) {
+  const syncMotion = () => {
+    root.classList.toggle('motion-paused', paused || reduced.matches);
+    if (paused || reduced.matches) revealAll();
+    if (!button) return;
+    const label = paused ? button.dataset.resumeLabel : button.dataset.pauseLabel;
+    button.setAttribute('aria-label', label);
+    button.setAttribute('title', label);
+    button.setAttribute('aria-pressed', String(paused));
+    button.querySelector('.motion-icon').textContent = paused ? '▷' : 'Ⅱ';
+  };
+  syncMotion();
+  button?.addEventListener('click', () => {
+    paused = !paused;
+    try { sessionStorage.setItem('motion-paused', String(paused)); } catch (_) { /* Optional preference storage. */ }
+    syncMotion();
+  });
+  if (reduced.addEventListener) reduced.addEventListener('change', syncMotion);
+  else if (reduced.addListener) reduced.addListener(syncMotion);
+
+  // Content is visible by default, including without JavaScript.
+  if ('IntersectionObserver' in window && !paused && !reduced.matches) {
     try {
       observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
@@ -49,60 +45,40 @@
           entry.target.classList.add('is-visible');
           observer.unobserve(entry.target);
         });
-      }, { threshold: 0.08 });
+      }, { threshold: 0.05 });
       reveals.forEach((item) => {
-        if (item.getBoundingClientRect().top < window.innerHeight * 0.94) return;
+        if (item.getBoundingClientRect().top <= window.innerHeight * 0.94) return;
         item.classList.add('will-reveal');
         observer.observe(item);
       });
     } catch (_) { revealAll(); }
   }
-  const motionChange = () => {
-    syncMotion();
-    if (reducedMotion.matches) revealAll();
-  };
-  if (reducedMotion.addEventListener) reducedMotion.addEventListener('change', motionChange);
-  else if (reducedMotion.addListener) reducedMotion.addListener(motionChange);
 
-  // Update a small reading indicator at most once per rendered scroll frame.
-  let framePending = false;
-  const updateProgress = () => {
+  const updateReading = () => {
     const distance = root.scrollHeight - window.innerHeight;
     const progress = distance > 0 ? Math.min(1, Math.max(0, window.scrollY / distance)) : 0;
     root.style.setProperty('--progress', progress.toFixed(4));
-    framePending = false;
-  };
-  const queueProgress = () => {
-    if (framePending) return;
-    framePending = true;
-    window.requestAnimationFrame(updateProgress);
-  };
-  window.addEventListener('scroll', queueProgress, { passive: true });
-  window.addEventListener('resize', queueProgress, { passive: true });
-  window.addEventListener('load', queueProgress, { once: true });
-  updateProgress();
-
-  // A soft light follows the pointer; the diagram itself stays still and readable.
-  const stage = document.querySelector('.graph-stage');
-  let pointerFrame = 0;
-  let pointerX = 0;
-  let pointerY = 0;
-  stage?.addEventListener('pointermove', (event) => {
-    if (reducedMotion.matches || paused || event.pointerType !== 'mouse') return;
-    const bounds = stage.getBoundingClientRect();
-    pointerX = event.clientX - bounds.left;
-    pointerY = event.clientY - bounds.top;
-    if (pointerFrame) return;
-    pointerFrame = window.requestAnimationFrame(() => {
-      stage.style.setProperty('--glow-x', `${pointerX}px`);
-      stage.style.setProperty('--glow-y', `${pointerY}px`);
-      pointerFrame = 0;
+    let current = sections[0]?.id || '';
+    sections.forEach((section) => {
+      if (section.getBoundingClientRect().top <= Math.max(155, window.innerHeight * 0.28)) current = section.id;
     });
-  }, { passive: true });
-  stage?.addEventListener('pointerleave', () => {
-    if (pointerFrame) window.cancelAnimationFrame(pointerFrame);
-    pointerFrame = 0;
-    stage.style.removeProperty('--glow-x');
-    stage.style.removeProperty('--glow-y');
-  });
+    if (current !== activeSection) {
+      activeSection = current;
+      navLinks.forEach((link) => {
+        if (link.getAttribute('href') === `#${current}`) link.setAttribute('aria-current', 'location');
+        else link.removeAttribute('aria-current');
+      });
+    }
+    scheduled = false;
+  };
+  const queueReading = () => {
+    if (scheduled) return;
+    scheduled = true;
+    window.requestAnimationFrame(updateReading);
+  };
+  window.addEventListener('scroll', queueReading, { passive: true });
+  window.addEventListener('resize', queueReading, { passive: true });
+  window.addEventListener('load', queueReading, { once: true });
+  document.querySelectorAll('.research-details').forEach((details) => details.addEventListener('toggle', queueReading));
+  updateReading();
 })();

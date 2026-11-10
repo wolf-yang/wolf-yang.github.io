@@ -1,15 +1,26 @@
-# Zhuowei Yang · Personal website
+# Zhuowei Yang · Academic Website
 
 https://wolf-yang.github.io/
 
-- `index.html`: English, the default homepage.
-- `zh.html`: Chinese.
-- `en.html`: English alias, retained for existing links.
-- `style.css`: shared responsive styles and motion.
-- `main.js`: research-interest interaction, motion controls, scroll reveals, reading progress.
+English is the default (`index.html`); `zh.html` is the Chinese version. `en.html` remains an English alias.
 
-No build step or external JavaScript dependencies. GitHub Pages deploys from `main` / root.
+## Content
 
-The animated graph illustrates research interests, not experimental results. Motion respects the system reduced-motion preference and can also be paused with the button below the graph. Without JavaScript, all content and language links remain available.
+- About Me
+- Research: four research projects, separate from education and employment.
+- Publications: the survey paper.
+- Education & Experience: two education entries and the IROOTECH internship (November 2025–June 2026).
+- Honors: National Scholarship (2023, 2024).
+- Contact
 
-Content is based on the supplied November 2026 CV and subsequent user updates. The IROOTECH internship ran from November 2025 to June 2026, within a related university–industry project spanning September 2025 to June 2026. Education, research, and the internship share a timeline ordered by start date. A personal motto appears beneath the hero. Only the National Scholarship (2023, 2024) is displayed under recognition. The original CV and phone number are not published.
+Content follows the November 2026 CV and subsequent owner corrections. The university–industry research project spans September 2025–June 2026; the associated IROOTECH internship spans November 2025–June 2026. The CV PDF and phone number are not published.
+
+## Design & behavior
+
+White background, system sans-serif typography, a profile sidebar, and a readable single-column content area. Motion is limited to a small decorative network mark, gentle entrance effects, link transitions, and a reading indicator. The header motion control and system reduced-motion preference disable nonessential motion. Content, native research details, links, and language switching work without JavaScript.
+
+No build dependencies. GitHub Pages deploys from the root of `main`.
+
+## Design references
+
+The information structure was informed by [Academic Pages](https://github.com/academicpages/academicpages.github.io) and [al-folio](https://github.com/alshedivat/al-folio). Visual grouping follows [NN/g visual hierarchy guidance](https://www.nngroup.com/articles/visual-hierarchy-ux-definition/). Motion behavior follows [W3C guidance](https://www.w3.org/WAI/WCAG22/Understanding/animation-from-interactions). The HTML, CSS, and JavaScript in this repository are custom implementations; no template code was imported.
