@@ -2,7 +2,7 @@
 
 Original image files, used to identify the institutions in the owner's education and internship history. Respective names and marks belong to their institutions. Images retain their original aspect ratios and are not recolored.
 
-- UCAS: https://www.ucas.ac.cn/images/logo_01.png (linked from https://www.ucas.ac.cn/). The original white emblem is presented on a blue tile.
+- Institute of Automation, Chinese Academy of Sciences (CASIA): https://ia.cas.cn/gkjj/xxbs/201010/W020101028581223717789.jpg (from the institute’s official identity page: https://ia.cas.cn/gkjj/xxbs/).
 - Northwestern Polytechnical University: https://www.nwpu.edu.cn/images/logo2.png (linked from https://www.nwpu.edu.cn/).
 - IROOTECH: https://www.irootech.com/vancheerfile/images/2025/3/20250328144138386.png (linked from https://www.irootech.com/).
 
