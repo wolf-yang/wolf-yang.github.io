@@ -7,13 +7,15 @@ English is the default (`index.html`); `zh.html` is the Chinese version. `en.htm
 ## Content
 
 - About Me
-- Research: four research projects, separate from education and employment.
-- Publications: the survey paper.
 - Education & Experience: two education entries and the IROOTECH internship (November 2025–June 2026).
+- Research: four research projects, separate from education and employment.
+- Publications: the survey paper, linked to its DOI landing page.
 - Honors: National Scholarship (2023, 2024).
 - Contact
 
 Content follows the November 2026 CV and subsequent owner corrections. The university–industry research project spans September 2025–June 2026; the associated IROOTECH internship spans November 2025–June 2026. The CV PDF and phone number are not published.
+
+Official institution logos are stored in `assets/logos`; source URLs and the verified paper DOI metadata are documented in `assets/logos/SOURCES.md`.
 
 ## Design & behavior
 
